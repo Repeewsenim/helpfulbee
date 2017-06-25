@@ -1,16 +1,60 @@
-# Facebook Messenger Bot
-This is a simple python template that uses Flask to build a webhook for Facebook's Messenger Bot API.
+# ![helpfulbee](https://user-images.githubusercontent.com/26120940/27520450-d0c8dc9a-59c0-11e7-991d-77f372039381.png)
+*Insert description about this project here.* This project is based off of Hartley Brody's [Facebook Messenger Bot Tutorial](https://blog.hartleybrody.com/fb-messenger-bot/).
 
-Read more in my [tutorial that uses this repository](https://blog.hartleybrody.com/fb-messenger-bot/).
+# Deploying to an Apache Server
 
-*New:* [Check out my Facebook Messenger Bot Course](https://facebook-messenger-bot.teachable.com/p/facebook-messenger-bot/). It walks you through the process of getting this bot hosted on heroku step-by-step, and also unlocks all the content that's hidden in this repo's branches.
+You need to have a LA(M)P (Linux, Apache, MySQL, and Python) stack installed on your server. This project doesn't use a database for persistent storage.
 
-## "Callback verification failed"
+## Install and Enable `mod_wsgi`
 
-![Facebook Error](https://cloud.githubusercontent.com/assets/18402893/21538944/f96fcd1e-cdc7-11e6-83ee-a866190d9080.png)
+WSGI (Web Server Gateway Interface) is a specification for interface between web servers and web applications for Python. Install the `mod_wsgi` Apache HTTP server mod that allows Apache to serve Flask applications.
 
-The #1 error that gets reported in issues is that facebook returns an error message (like above) when trying to add the heroku endpoint to your facebook chat application.
+```bash
+sudo apt-get install libapache2-mod-wsgi python-dev
+```
 
-Our flask application intentionally returns a 403 Forbidden error if the token that facebook sends doesn't match the token you set using the heroku configuration variables.
+Enable `mod_wsgi`.
 
-If you're getting this error, it likely means that you didn't set your heroku config values properly. Run `heroku config` from the command line within your application and verify that there's a key called `VERIFY_TOKEN` that has been set, and that it's set to the same value as what you've typed into the window on facebook.
+```bash
+sudo a2enmod wsgi
+```
+
+## Set up a Virtual Environment
+
+`virtualenv` is a tool that will create sandboxed Python execution environments. This will keep the application dependencies separated from the main system.
+
+It can be installed using `pip`.
+
+```bash
+sudo pip install virtualenv
+```
+
+Create the virtual environment and activate it. `venv` is the name of the virtual environment that will be created.
+
+```bash
+virtualenv venv
+source venv/bin/activate
+```
+
+Next, install the Python dependencies listed in `requirements.txt`. When finished, deactivate the virtual environment with:
+
+```bash
+deactivate
+```
+
+## Run the Deploy Script
+
+Navigate to the `deploy/` directory and edit the variables at the top of `deploy.sh`. Do **not** include a trailing `/` at the end of the path names.
+
+- `VENV_DIR` is the absolute path to the directory of the virtual environment created.
+- `INSTALL_DIR` is the absolute path to the directory where you want the application to be installed to.
+- `SERVER_NAME` is the domain name that the application will be served to.
+- `SECRET_KEY` is the key used to sign user session cookies. Keep this really secret.
+
+Save and run the script to deploy the application. This will install *Helpful Bee* to the specified deployment directory and configure the Apache server to run the application.
+
+```bash
+sudo bash deploy.sh
+```
+
+**Warning:** *This will remove everything in `INSTALL_DIR` if it exists. Double check that the variable values are correct before running the script.*
