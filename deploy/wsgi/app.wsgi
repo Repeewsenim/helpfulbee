@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import sys
 import logging
@@ -8,7 +8,11 @@ sys.path.insert(0, "{{ INSTALL_DIR }}/")
 
 # virtual environment
 activate_this = "{{ VENV_DIR }}/bin/activate_this.py"
-exec(open(activate_this).read(), dict(__file__=activate_this))
+execfile(activate_this, dict(__file__=activate_this))
+
+# If using Python 3.x,
+#activate_this = "{{ VENV_DIR }}/bin/activate_this.py"
+#exec(open(activate_this).read(), dict(__file__=activate_this))
 
 # get application object
 from app import app as application
